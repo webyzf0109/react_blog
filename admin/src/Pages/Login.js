@@ -1,22 +1,68 @@
-import React , {useState} from 'react';
+import React , {useState,useEffect,createContext} from 'react';
 import 'antd/dist/antd.css';
 import '../static/css/Login.css';
-import { Card, Input, Icon,Button ,Spin } from 'antd';
- const Login=()=>{
+import { Card, Input, Icon,Button ,Spin,message } from 'antd';
+import axios from 'axios'
+import  servicePath  from '../config/apiUrl'
+
+const openIdContext = createContext()
+
+function Login(props){
+
     const [userName , setUserName] = useState('')
     const [password , setPassword] = useState('')
     const [isLoading, setIsLoading] = useState(false)
+
+    useEffect(()=>{
+
+    },[])
+
     const checkLogin = ()=>{
         setIsLoading(true)
+
+        if(!userName){
+            message.error('用户名不能为空')
+            setIsLoading(false)
+            return false
+        }else if(!password){
+            message.error('密码不能为空')
+            setIsLoading(false)
+            return false
+        }
+        let dataProps = {
+            'userName':userName,
+            'password':password
+        }
+        axios({
+            method:'post',
+            url:servicePath.checkLogin,
+            data:dataProps,
+            withCredentials: true
+        }).then(
+           res=>{
+                console.log(res.data)
+                setIsLoading(false)
+                if(res.data.data=='登录成功'){
+                    localStorage.setItem('openId',res.data.openId)
+                    props.history.push('/index')
+                }else{
+                    message.error('用户名密码错误')
+                }
+           }
+        ).catch(err=>{
+            console.log(err,'err')
+        })
+
         setTimeout(()=>{
             setIsLoading(false)
         },1000)
     }
-     return (
+
+    return (
         <div className="login-div">
 
             <Spin tip="Loading..." spinning={isLoading}>
-                <Card title="JSPang Blog  System" bordered={true} style={{ width: 400 }} >
+                <Card title="MC骚亮爷 Blog  System" bordered={true} style={{ width: 400 }} >
                     <Input
                         id="userName"
                         size="large"
@@ -38,5 +84,6 @@ import { Card, Input, Icon,Button ,Spin } from 'antd';
             </Spin>
         </div>
     )
- }
+}
+
 export default Login

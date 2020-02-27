@@ -1,4 +1,8 @@
 module.exports = app =>{
     const {router,controller} = app
-    router.get('/admin/checkLogin' ,controller.admin.main.checkLogin)
+    var adminauth = app.middleware.adminauth()
+    router.post('/admin/checkLogin' ,adminauth,controller.admin.main.checkLogin)
+    router.get('/admin/getTypeInfo',adminauth ,controller.admin.main.getTypeInfo)
+    router.post('/admin/addArticle',adminauth,controller.admin.main.addArticle)
+    router.post('/admin/updateArticle',adminauth,controller.admin.main.updateArticle)
 }
